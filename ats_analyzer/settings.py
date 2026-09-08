@@ -20,7 +20,7 @@ SECRET_KEY = os.environ.get(
     "django-insecure-change-this-in-production"
 )
 
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 
 # =========================================================
