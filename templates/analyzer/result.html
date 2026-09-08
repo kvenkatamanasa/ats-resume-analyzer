@@ -1,0 +1,711 @@
+{% extends "base.html" %}
+
+{% block title %}
+    ATS Resume Analysis
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    {% if analysis %}
+
+        <!-- =================================================
+             PAGE HEADER
+             ================================================= -->
+
+        <div class="page-header">
+
+            <span class="badge badge-blue">
+                ATS ANALYSIS
+            </span>
+
+            <h1>
+                Resume Analysis
+            </h1>
+
+            <p>
+                {{ resume.original_filename }}
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             OVERALL SCORE
+             ================================================= -->
+
+        <div class="card">
+
+            <div class="score-layout">
+
+                <!-- SCORE -->
+
+                <div class="score-box">
+
+                    <div class="score-circle">
+
+                        <span class="score-number">
+                            {{ analysis.ats_score|floatformat:0 }}
+                        </span>
+
+                    </div>
+
+                    <h2>
+                        Overall ATS Score
+                    </h2>
+
+                    <p>
+                        Out of 100
+                    </p>
+
+                </div>
+
+
+                <!-- SCORE BREAKDOWN -->
+
+                <div>
+
+                    <h2>
+                        Score Breakdown
+                    </h2>
+
+
+                    <!-- KEYWORD SCORE -->
+
+                    <div class="progress-row">
+
+                        <div class="progress-header">
+
+                            <span>
+                                Keyword Score
+                            </span>
+
+                            <strong>
+                                {{ analysis.keyword_score|floatformat:0 }}/100
+                            </strong>
+
+                        </div>
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar"
+                                style="width: {{ analysis.keyword_score }}%;"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SKILLS SCORE -->
+
+                    <div class="progress-row">
+
+                        <div class="progress-header">
+
+                            <span>
+                                Skills Score
+                            </span>
+
+                            <strong>
+                                {{ analysis.skills_score|floatformat:0 }}/100
+                            </strong>
+
+                        </div>
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar"
+                                style="
+                                    width: {{ analysis.skills_score }}%;
+                                    background-color: #198754;
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SECTION SCORE -->
+
+                    <div class="progress-row">
+
+                        <div class="progress-header">
+
+                            <span>
+                                Section Score
+                            </span>
+
+                            <strong>
+                                {{ analysis.section_score|floatformat:0 }}/100
+                            </strong>
+
+                        </div>
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar"
+                                style="
+                                    width: {{ analysis.section_score }}%;
+                                    background-color: #0dcaf0;
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EXPERIENCE SCORE -->
+
+                    <div class="progress-row">
+
+                        <div class="progress-header">
+
+                            <span>
+                                Experience Score
+                            </span>
+
+                            <strong>
+                                {{ analysis.experience_score|floatformat:0 }}/100
+                            </strong>
+
+                        </div>
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar"
+                                style="
+                                    width: {{ analysis.experience_score }}%;
+                                    background-color: #d99a00;
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FORMATTING SCORE -->
+
+                    <div class="progress-row">
+
+                        <div class="progress-header">
+
+                            <span>
+                                Formatting Score
+                            </span>
+
+                            <strong>
+                                {{ analysis.formatting_score|floatformat:0 }}/100
+                            </strong>
+
+                        </div>
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar"
+                                style="
+                                    width: {{ analysis.formatting_score }}%;
+                                    background-color: #343a40;
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             JOB MATCH
+             ================================================= -->
+
+        {% if analysis.job_description %}
+
+            <div class="card" style="margin-top: 25px;">
+
+                <h2>
+                    Job Match Analysis
+                </h2>
+
+                {% if analysis.job_description.title %}
+
+                    <p>
+                        Target Role:
+                        <strong>
+                            {{ analysis.job_description.title }}
+                        </strong>
+                    </p>
+
+                {% endif %}
+
+
+                <div class="three-column">
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Similarity Score
+                        </div>
+
+                        <div class="stat-value">
+                            {{ analysis.similarity_score|floatformat:0 }}/100
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Matched Keywords
+                        </div>
+
+                        <div class="stat-value">
+                            {{ analysis.matched_keywords|length }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Missing Keywords
+                        </div>
+
+                        <div class="stat-value">
+                            {{ analysis.missing_keywords|length }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div
+                class="card"
+                style="
+                    margin-top: 25px;
+                    background-color: #eaf4ff;
+                "
+            >
+
+                <h3>
+                    General ATS Analysis
+                </h3>
+
+                <p>
+                    No Job Description was provided.
+                    Add one during your next analysis
+                    for job-specific keyword matching.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             SKILLS / MISSING KEYWORDS
+             ================================================= -->
+
+        <div class="two-column" style="margin-top: 25px;">
+
+
+            <!-- DETECTED SKILLS -->
+
+            <div class="card">
+
+                <h2>
+                    Detected Skills
+                </h2>
+
+                {% if analysis.skills %}
+
+                    {% for skill in analysis.skills %}
+
+                        <span class="skill-tag">
+                            {{ skill }}
+                        </span>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p>
+                        No recognized technical skills detected.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- MISSING KEYWORDS -->
+
+            <div class="card">
+
+                <h2>
+                    Missing Keywords
+                </h2>
+
+
+                {% if analysis.job_description %}
+
+                    {% if analysis.missing_keywords %}
+
+                        {% for keyword in analysis.missing_keywords %}
+
+                            <span class="skill-tag missing-tag">
+                                {{ keyword }}
+                            </span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="text-success">
+                            No important missing keywords detected.
+                        </p>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <p>
+                        Job Description was not provided.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             RECOMMENDATIONS / SECTIONS
+             ================================================= -->
+
+        <div class="two-column" style="margin-top: 25px;">
+
+
+            <!-- RECOMMENDATIONS -->
+
+            <div class="card">
+
+                <h2>
+                    How to Improve Your Resume
+                </h2>
+
+
+                {% if analysis.recommendations %}
+
+                    {% for recommendation in analysis.recommendations %}
+
+                        <div class="recommendation">
+
+                            {{ recommendation }}
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p class="text-success">
+                        Your resume looks good based on
+                        the current checks.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- RESUME SECTIONS -->
+
+            <div class="card">
+
+                <h2>
+                    Resume Sections
+                </h2>
+
+
+                <div class="section-row">
+
+                    <span>
+                        Summary
+                    </span>
+
+                    {% if analysis.sections.summary %}
+
+                        <span class="status-detected">
+                            Detected
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-missing">
+                            Missing
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="section-row">
+
+                    <span>
+                        Skills
+                    </span>
+
+                    {% if analysis.sections.skills %}
+
+                        <span class="status-detected">
+                            Detected
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-missing">
+                            Missing
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="section-row">
+
+                    <span>
+                        Experience
+                    </span>
+
+                    {% if analysis.sections.experience %}
+
+                        <span class="status-detected">
+                            Detected
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-missing">
+                            Missing
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="section-row">
+
+                    <span>
+                        Education
+                    </span>
+
+                    {% if analysis.sections.education %}
+
+                        <span class="status-detected">
+                            Detected
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-missing">
+                            Missing
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="section-row">
+
+                    <span>
+                        Projects
+                    </span>
+
+                    {% if analysis.sections.projects %}
+
+                        <span class="status-detected">
+                            Detected
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-missing">
+                            Missing
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             MATCHED KEYWORDS
+             ================================================= -->
+
+        {% if analysis.job_description %}
+
+            <div
+                class="card"
+                style="margin-top: 25px;"
+            >
+
+                <h2>
+                    Matched Keywords
+                </h2>
+
+
+                {% if analysis.matched_keywords %}
+
+                    {% for keyword in analysis.matched_keywords %}
+
+                        <span class="skill-tag">
+                            {{ keyword }}
+                        </span>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p>
+                        No matching keywords detected.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             EXTRACTED TEXT
+             ================================================= -->
+
+        <div
+            class="card"
+            style="margin-top: 25px;"
+        >
+
+            <h2>
+                Extracted Resume Text
+            </h2>
+
+            <div class="extracted-text">
+
+                {{ resume.extracted_text }}
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTION BUTTONS
+             ================================================= -->
+
+        <div
+            class="no-print"
+            style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 30px;
+            "
+        >
+
+            <a
+                href="{% url 'upload_resume' %}"
+                class="button primary-button"
+            >
+                Analyze Another Resume
+            </a>
+
+
+            <a
+                href="{% url 'resume_templates' %}"
+                class="button secondary-button"
+            >
+                Build ATS Resume
+            </a>
+
+
+            <a
+                href="{% url 'dashboard' %}"
+                class="button outline-button"
+            >
+                Dashboard
+            </a>
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- =================================================
+             NO ANALYSIS
+             ================================================= -->
+
+        <div class="card">
+
+            <div class="empty-state">
+
+                <h2>
+                    Analysis Not Available
+                </h2>
+
+                <p>
+                    No analysis record was found for this resume.
+                </p>
+
+                <a
+                    href="{% url 'upload_resume' %}"
+                    class="button primary-button"
+                >
+                    Analyze Resume
+                </a>
+
+            </div>
+
+        </div>
+
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

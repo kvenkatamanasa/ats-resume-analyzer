@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Analyze Resume - ATS Resume Analyzer
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <span class="badge badge-blue">
+            ATS RESUME ANALYZER
+        </span>
+
+        <h1>
+            Analyze Your Resume
+        </h1>
+
+        <p>
+            Upload your PDF or DOCX resume to check ATS compatibility,
+            skills, sections, formatting and improvement areas.
+        </p>
+
+    </div>
+
+
+    <!-- MAIN FORM -->
+
+    <div class="card">
+
+        {% if form.errors %}
+
+            <div
+                style="
+                    background: #fff1f2;
+                    border: 1px solid #fecdd3;
+                    color: #be123c;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                "
+            >
+
+                <strong>
+                    Please correct the following errors:
+                </strong>
+
+                <div style="margin-top: 10px;">
+                    {{ form.errors }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+
+            <!-- RESUME FILE -->
+
+            <div class="form-group">
+
+                <label for="{{ form.file.id_for_label }}">
+                    Resume File
+                </label>
+
+                {{ form.file }}
+
+                <div class="help-text">
+                    Upload a text-readable PDF or DOCX resume.
+                </div>
+
+            </div>
+
+
+            <!-- JOB DESCRIPTION -->
+
+            <div
+                style="
+                    margin: 30px 0 20px;
+                    padding-top: 25px;
+                    border-top: 1px solid #e5e7eb;
+                "
+            >
+
+                <h2 style="margin-bottom: 8px;">
+                    Target Job
+                </h2>
+
+                <p
+                    style="
+                        margin: 0;
+                        color: #6b7280;
+                        font-size: 14px;
+                    "
+                >
+                    Job Description is optional.
+                    Leave it blank for a general ATS check.
+                </p>
+
+            </div>
+
+
+            <!-- JOB TITLE -->
+
+            <div class="form-group">
+
+                <label for="{{ form.job_title.id_for_label }}">
+                    Job Title
+                    <span style="color: #6b7280; font-weight: normal;">
+                        (Optional)
+                    </span>
+                </label>
+
+                {{ form.job_title }}
+
+            </div>
+
+
+            <!-- JOB DESCRIPTION -->
+
+            <div class="form-group">
+
+                <label for="{{ form.job_description.id_for_label }}">
+                    Job Description
+                    <span style="color: #6b7280; font-weight: normal;">
+                        (Optional)
+                    </span>
+                </label>
+
+                {{ form.job_description }}
+
+                <div class="help-text">
+                    Paste the job description to receive
+                    matched and missing keyword analysis.
+                </div>
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <div
+                style="
+                    display: flex;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                    margin-top: 25px;
+                "
+            >
+
+                <button
+                    type="submit"
+                    class="button primary-button"
+                >
+                    Analyze Resume
+                </button>
+
+
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="button outline-button"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- FEATURES -->
+
+    <div class="three-column" style="margin-top: 25px;">
+
+
+        <div class="card">
+
+            <h3>
+                ATS Score
+            </h3>
+
+            <p style="color: #6b7280; font-size: 14px;">
+                Get a score based on keywords, skills,
+                sections, experience and formatting.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Skill Detection
+            </h3>
+
+            <p style="color: #6b7280; font-size: 14px;">
+                Automatically identify technical skills
+                from your resume.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Improvement Tips
+            </h3>
+
+            <p style="color: #6b7280; font-size: 14px;">
+                Receive recommendations to improve
+                your resume.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

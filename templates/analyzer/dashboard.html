@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+
+{% block title %}
+ATS Resume Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="hero-section">
+
+        <div>
+
+            <h1>
+                ATS Resume Dashboard
+            </h1>
+
+            <p>
+                Analyze your resume, improve your ATS score,
+                match job descriptions and build ATS-friendly resumes.
+            </p>
+
+        </div>
+
+        <div style="margin-top: 25px;">
+
+            <a
+                href="{% url 'upload_resume' %}"
+                class="button primary-button"
+                style="
+                    background: #ffffff;
+                    color: #0d6efd;
+                "
+            >
+                Analyze Resume
+            </a>
+
+            <a
+                href="{% url 'resume_templates' %}"
+                class="button outline-button"
+                style="
+                    margin-left: 8px;
+                    color: #ffffff;
+                    border-color: #ffffff;
+                    background: transparent;
+                "
+            >
+                Build Resume
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STATISTICS
+         ===================================================== -->
+
+    <div class="stats-grid">
+
+
+        <!-- TOTAL -->
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total Analyses
+            </div>
+
+            <div class="stat-value">
+                {{ total_analyses }}
+            </div>
+
+        </div>
+
+
+        <!-- AVERAGE -->
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Average ATS Score
+            </div>
+
+            <div class="stat-value">
+                {{ average_score|floatformat:0 }}/100
+            </div>
+
+        </div>
+
+
+        <!-- LATEST -->
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Latest ATS Score
+            </div>
+
+            <div class="stat-value">
+
+                {% if latest_analysis %}
+
+                    {{ latest_analysis.ats_score|floatformat:0 }}/100
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         QUICK ACTIONS
+         ===================================================== -->
+
+    <div class="two-column">
+
+
+        <!-- ANALYZE -->
+
+        <div class="card">
+
+            <h2>
+                Analyze Existing Resume
+            </h2>
+
+            <p>
+                Upload a PDF or DOCX resume to check
+                ATS compatibility, skills, sections,
+                formatting and improvement areas.
+            </p>
+
+            <a
+                href="{% url 'upload_resume' %}"
+                class="button primary-button"
+            >
+                Analyze Resume
+            </a>
+
+        </div>
+
+
+        <!-- BUILD -->
+
+        <div class="card">
+
+            <h2>
+                Build ATS-Friendly Resume
+            </h2>
+
+            <p>
+                Choose an ATS-friendly template,
+                enter your information and create
+                a professional resume.
+            </p>
+
+            <a
+                href="{% url 'resume_templates' %}"
+                class="button secondary-button"
+            >
+                Choose Template
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         ANALYSIS HISTORY
+         ===================================================== -->
+
+    <div class="card">
+
+        <div
+            style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+            "
+        >
+
+            <h2 style="margin: 0;">
+                Analysis History
+            </h2>
+
+            <span class="badge badge-blue">
+                {{ total_analyses }} analyses
+            </span>
+
+        </div>
+
+
+        {% if analyses %}
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Resume
+                            </th>
+
+                            <th>
+                                Job
+                            </th>
+
+                            <th>
+                                ATS Score
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for analysis in analyses %}
+
+                        <tr>
+
+
+                            <!-- RESUME -->
+
+                            <td>
+
+                                <strong>
+                                    {{ analysis.resume.original_filename }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- JOB -->
+
+                            <td>
+
+                                {% if analysis.job_description %}
+
+                                    {% if analysis.job_description.title %}
+
+                                        {{ analysis.job_description.title }}
+
+                                    {% else %}
+
+                                        Job Description
+
+                                    {% endif %}
+
+                                {% else %}
+
+                                    <span class="badge badge-blue">
+                                        General ATS
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- SCORE -->
+
+                            <td>
+
+                                {% if analysis.ats_score >= 80 %}
+
+                                    <span class="badge badge-green">
+                                        {{ analysis.ats_score|floatformat:0 }}/100
+                                    </span>
+
+                                {% elif analysis.ats_score >= 60 %}
+
+                                    <span class="badge badge-yellow">
+                                        {{ analysis.ats_score|floatformat:0 }}/100
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge badge-red">
+                                        {{ analysis.ats_score|floatformat:0 }}/100
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+
+                                {{ analysis.created_at|date:"d M Y, H:i" }}
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <a
+                                    href="{% url 'analysis_detail' analysis.id %}"
+                                    class="button outline-button"
+                                    style="
+                                        padding: 7px 11px;
+                                        font-size: 12px;
+                                    "
+                                >
+                                    View
+                                </a>
+
+                            </td>
+
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+
+            <div class="empty-state">
+
+                <h3>
+                    No Resume Analyses Yet
+                </h3>
+
+                <p>
+                    Upload your first resume to check
+                    its ATS score.
+                </p>
+
+                <a
+                    href="{% url 'upload_resume' %}"
+                    class="button primary-button"
+                >
+                    Analyze Your First Resume
+                </a>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =====================================================
+         BUILT RESUMES
+         ===================================================== -->
+
+    {% if built_resumes %}
+
+        <div
+            class="card"
+            style="margin-top: 25px;"
+        >
+
+            <h2>
+                Built Resumes
+            </h2>
+
+
+            <div
+                class="template-grid"
+                style="margin-top: 20px;"
+            >
+
+
+                {% for resume in built_resumes %}
+
+                    <div class="template-card">
+
+                        <h3>
+                            {{ resume.full_name }}
+                        </h3>
+
+
+                        <p class="template-description">
+
+                            {{ resume.get_template_display }}
+
+                        </p>
+
+
+                        <p
+                            style="
+                                font-size: 13px;
+                                color: #6b7280;
+                            "
+                        >
+
+                            Updated:
+                            {{ resume.updated_at|date:"d M Y" }}
+
+                        </p>
+
+
+                        <a
+                            href="{% url 'resume_builder_preview' resume.id %}"
+                            class="button primary-button"
+                        >
+                            Open Resume
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}

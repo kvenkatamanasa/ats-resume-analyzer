@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Login - ATS Resume Analyzer
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+
+    <div class="auth-card">
+
+        <!-- HEADER -->
+
+        <div style="text-align: center; margin-bottom: 25px;">
+
+            <div
+                style="
+                    width: 65px;
+                    height: 65px;
+                    margin: 0 auto 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    background: #edf4ff;
+                    color: #0d6efd;
+                    font-size: 28px;
+                    font-weight: 700;
+                "
+            >
+                ATS
+            </div>
+
+            <h1>
+                Welcome Back
+            </h1>
+
+            <p class="auth-subtitle">
+                Sign in to analyze and build your resume.
+            </p>
+
+        </div>
+
+
+        <!-- ERRORS -->
+
+        {% if form.errors %}
+
+            <div
+                style="
+                    background: #fff1f2;
+                    border: 1px solid #fecdd3;
+                    color: #be123c;
+                    padding: 12px 15px;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                    font-size: 14px;
+                "
+            >
+                Invalid username or password.
+                Please try again.
+            </div>
+
+        {% endif %}
+
+
+        <!-- FORM -->
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <div class="form-group">
+
+                <label for="id_username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    id="id_username"
+                    placeholder="Enter your username"
+                    autocomplete="username"
+                    required
+                    autofocus
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="id_password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    id="id_password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            {% if next %}
+
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{{ next }}"
+                >
+
+            {% endif %}
+
+
+            <button
+                type="submit"
+                class="button primary-button"
+                style="width: 100%;"
+            >
+                Login
+            </button>
+
+        </form>
+
+
+        <!-- REGISTER -->
+
+        <div
+            style="
+                text-align: center;
+                margin-top: 25px;
+                padding-top: 20px;
+                border-top: 1px solid #e5e7eb;
+            "
+        >
+
+            <p style="
+                margin: 0;
+                color: #6b7280;
+                font-size: 14px;
+            ">
+
+                Don't have an account?
+
+                <a
+                    href="{% url 'register' %}"
+                    style="
+                        color: #0d6efd;
+                        font-weight: 600;
+                    "
+                >
+                    Create an account
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

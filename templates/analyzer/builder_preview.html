@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ resume.full_name }} - Resume Preview
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+
+    <!-- =================================================
+         PREVIEW HEADER
+         ================================================= -->
+
+    <div
+        class="no-print"
+        style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        "
+    >
+
+        <div>
+
+            <span class="badge badge-blue">
+                {{ resume.get_template_display }}
+            </span>
+
+            <h1 style="margin: 8px 0 5px;">
+                Resume Preview
+            </h1>
+
+            <p style="
+                margin: 0;
+                color: #6b7280;
+            ">
+                Your ATS-friendly resume is ready.
+            </p>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div
+            style="
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            "
+        >
+
+            <a
+                href="{% url 'resume_builder' template=resume.template %}"
+                class="button outline-button"
+            >
+                Edit
+            </a>
+
+
+            <a
+                href="{% url 'download_resume_pdf' resume.id %}"
+                class="button danger-button"
+            >
+                Download PDF
+            </a>
+
+
+            <a
+                href="{% url 'download_resume_docx' resume.id %}"
+                class="button primary-button"
+            >
+                Download DOCX
+            </a>
+
+
+            <button
+                type="button"
+                onclick="window.print()"
+                class="button secondary-button"
+            >
+                Print
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         RESUME
+         ================================================= -->
+
+    <div class="resume-paper">
+
+
+        <!-- NAME -->
+
+        <div class="resume-name">
+
+            {{ resume.full_name }}
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        {% if resume.professional_title %}
+
+            <div class="resume-title">
+
+                {{ resume.professional_title }}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- CONTACT -->
+
+        <div class="resume-contact">
+
+            {% if resume.email %}
+
+                {{ resume.email }}
+
+            {% endif %}
+
+
+            {% if resume.phone %}
+
+                | {{ resume.phone }}
+
+            {% endif %}
+
+
+            {% if resume.location %}
+
+                | {{ resume.location }}
+
+            {% endif %}
+
+
+            {% if resume.linkedin %}
+
+                | {{ resume.linkedin }}
+
+            {% endif %}
+
+
+            {% if resume.github %}
+
+                | {{ resume.github }}
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        {% if resume.summary %}
+
+            <div class="resume-section">
+
+                <div class="resume-section-title">
+                    Professional Summary
+                </div>
+
+                <div class="resume-content">
+                    {{ resume.summary }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- SKILLS -->
+
+        {% if resume.skills %}
+
+            <div class="resume-section">
+
+                <div class="resume-section-title">
+                    Technical Skills
+                </div>
+
+                <div class="resume-content">
+                    {{ resume.skills }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- EXPERIENCE -->
+
+        {% if resume.experience %}
+
+            <div class="resume-section">
+
+                <div class="resume-section-title">
+                    Experience
+                </div>
+
+                <div class="resume-content">
+                    {{ resume.experience }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- PROJECTS -->
+
+        {% if resume.projects %}
+
+            <div class="resume-section">
+
+                <div class="resume-section-title">
+                    Projects
+                </div>
+
+                <div class="resume-content">
+                    {{ resume.projects }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- EDUCATION -->
+
+        {% if resume.education %}
+
+            <div class="resume-section">
+
+                <div class="resume-section-title">
+                    Education
+                </div>
+
+                <div class="resume-content">
+                    {{ resume.education }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- CERTIFICATIONS -->
+
+        {% if resume.certifications %}
+
+            <div class="resume-section">
+
+                <div class="resume-section-title">
+                    Certifications
+                </div>
+
+                <div class="resume-content">
+                    {{ resume.certifications }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ACHIEVEMENTS -->
+
+        {% if resume.achievements %}
+
+            <div class="resume-section">
+
+                <div class="resume-section-title">
+                    Achievements
+                </div>
+
+                <div class="resume-content">
+                    {{ resume.achievements }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =================================================
+         BOTTOM ACTIONS
+         ================================================= -->
+
+    <div
+        class="no-print"
+        style="
+            text-align: center;
+            margin-top: 25px;
+            margin-bottom: 40px;
+        "
+    >
+
+        <a
+            href="{% url 'resume_templates' %}"
+            class="button outline-button"
+        >
+            Choose Another Template
+        </a>
+
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="button secondary-button"
+            style="margin-left: 7px;"
+        >
+            Dashboard
+        </a>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

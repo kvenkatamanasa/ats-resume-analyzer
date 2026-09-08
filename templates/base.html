@@ -1,0 +1,227 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ATS Resume Analyzer - Analyze, Improve and Build ATS-Friendly Resumes"
+    >
+
+    <meta
+        name="author"
+        content="ATS Resume Analyzer"
+    >
+
+    <title>
+        {% block title %}
+            ATS Resume Analyzer
+        {% endblock %}
+    </title>
+
+
+    <!-- =====================================================
+         CUSTOM CSS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVIGATION BAR
+     ========================================================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+
+        <!-- BRAND -->
+
+        <a
+            href="{% url 'home' %}"
+            class="brand"
+        >
+            ATS Resume Analyzer
+        </a>
+
+
+        <!-- NAVIGATION LINKS -->
+
+        <div class="nav-links">
+
+
+            {% if user.is_authenticated %}
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="{% url 'dashboard' %}"
+                >
+                    Dashboard
+                </a>
+
+
+                <!-- ANALYZE RESUME -->
+
+                <a
+                    href="{% url 'upload_resume' %}"
+                >
+                    Analyze Resume
+                </a>
+
+
+                <!-- BUILD RESUME -->
+
+                <a
+                    href="{% url 'resume_templates' %}"
+                >
+                    Build Resume
+                </a>
+
+
+                <!-- USER -->
+
+                <span class="user-name">
+                    Welcome, {{ user.username }}
+                </span>
+
+
+                <!-- LOGOUT -->
+
+                <form
+                    method="POST"
+                    action="{% url 'logout' %}"
+                    class="logout-form"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="logout-button"
+                    >
+                        Logout
+                    </button>
+
+                </form>
+
+
+            {% else %}
+
+
+                <!-- LOGIN -->
+
+                <a
+                    href="{% url 'login' %}"
+                >
+                    Login
+                </a>
+
+
+                <!-- REGISTER -->
+
+                <a
+                    href="{% url 'register' %}"
+                    class="register-button"
+                >
+                    Create Account
+                </a>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================================
+     MAIN CONTENT
+     ========================================================= -->
+
+<main>
+
+    {% block content %}
+    {% endblock %}
+
+</main>
+
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+
+        <!-- FOOTER INFORMATION -->
+
+        <div>
+
+            <h3>
+                ATS Resume Analyzer
+            </h3>
+
+            <p>
+                Analyze, improve, match and build
+                ATS-friendly resumes.
+            </p>
+
+        </div>
+
+
+        <!-- COPYRIGHT -->
+
+        <div>
+
+            <p>
+                © 2026 ATS Resume Analyzer
+            </p>
+
+        </div>
+
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     OPTIONAL PAGE JAVASCRIPT
+     ========================================================= -->
+
+{% block extra_js %}
+{% endblock %}
+
+
+</body>
+
+</html>

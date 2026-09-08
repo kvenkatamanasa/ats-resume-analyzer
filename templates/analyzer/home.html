@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}
+    ATS Resume Analyzer
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <!-- HERO -->
+
+    <section class="hero-section">
+
+        <h1>
+            ATS Resume Analyzer
+        </h1>
+
+        <p>
+            Analyze your resume, improve your ATS score,
+            match job descriptions and build professional
+            ATS-friendly resumes.
+        </p>
+
+
+        <div style="margin-top: 25px;">
+
+            <a
+                href="{% url 'upload_resume' %}"
+                class="button primary-button"
+                style="
+                    background-color: #ffffff;
+                    color: #0d6efd;
+                "
+            >
+                Analyze Resume
+            </a>
+
+
+            <a
+                href="{% url 'resume_templates' %}"
+                class="button outline-button"
+                style="
+                    margin-left: 8px;
+                    background-color: transparent;
+                    color: #ffffff;
+                    border-color: #ffffff;
+                "
+            >
+                Build Resume
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- FEATURES -->
+
+    <div class="three-column">
+
+
+        <div class="card">
+
+            <h2>
+                Resume Analysis
+            </h2>
+
+            <p>
+                Upload your PDF or DOCX resume and receive
+                an ATS compatibility score with detailed
+                analysis.
+            </p>
+
+            <a
+                href="{% url 'upload_resume' %}"
+                class="button primary-button"
+            >
+                Analyze Resume
+            </a>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>
+                Job Matching
+            </h2>
+
+            <p>
+                Add a Job Description to identify matched
+                keywords, missing keywords and improve
+                job-specific compatibility.
+            </p>
+
+            <a
+                href="{% url 'upload_resume' %}"
+                class="button secondary-button"
+            >
+                Match Job
+            </a>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>
+                Resume Builder
+            </h2>
+
+            <p>
+                Create a clean, professional and
+                ATS-friendly resume using multiple templates.
+            </p>
+
+            <a
+                href="{% url 'resume_templates' %}"
+                class="button primary-button"
+            >
+                Build Resume
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- HOW IT WORKS -->
+
+    <div
+        class="card"
+        style="margin-top: 25px;"
+    >
+
+        <h2>
+            How It Works
+        </h2>
+
+
+        <div class="three-column">
+
+
+            <div>
+
+                <span class="badge badge-blue">
+                    STEP 1
+                </span>
+
+                <h3 style="margin-top: 12px;">
+                    Upload
+                </h3>
+
+                <p>
+                    Upload your existing PDF or DOCX resume.
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <span class="badge badge-blue">
+                    STEP 2
+                </span>
+
+                <h3 style="margin-top: 12px;">
+                    Analyze
+                </h3>
+
+                <p>
+                    Get ATS scores, skills, sections,
+                    keywords and recommendations.
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <span class="badge badge-blue">
+                    STEP 3
+                </span>
+
+                <h3 style="margin-top: 12px;">
+                    Improve
+                </h3>
+
+                <p>
+                    Build or improve your resume using
+                    ATS-friendly templates.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- CTA -->
+
+    <div
+        class="card"
+        style="
+            margin-top: 25px;
+            text-align: center;
+        "
+    >
+
+        <h2>
+            Ready to improve your resume?
+        </h2>
+
+        <p>
+            Start your ATS analysis or create a new resume.
+        </p>
+
+        <a
+            href="{% url 'upload_resume' %}"
+            class="button primary-button"
+        >
+            Get Started
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

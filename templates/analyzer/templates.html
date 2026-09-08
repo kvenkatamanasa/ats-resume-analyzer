@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}
+    ATS Resume Templates
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <span class="badge badge-blue">
+            ATS-FRIENDLY RESUME BUILDER
+        </span>
+
+        <h1>
+            Choose Your Resume Template
+        </h1>
+
+        <p>
+            Select a clean, professional and machine-readable
+            resume format for your application.
+        </p>
+
+    </div>
+
+
+    <!-- TEMPLATE GRID -->
+
+    <div class="template-grid">
+
+        {% for template in templates %}
+
+            <div class="template-card">
+
+                <div style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                ">
+
+                    <span class="badge badge-blue">
+                        Template {{ forloop.counter }}
+                    </span>
+
+                    <span
+                        style="
+                            color: #0d6efd;
+                            font-size: 13px;
+                            font-weight: 700;
+                        "
+                    >
+                        ATS Ready
+                    </span>
+
+                </div>
+
+
+                <h2 style="
+                    margin-bottom: 10px;
+                    font-size: 22px;
+                ">
+                    {{ template.name }}
+                </h2>
+
+
+                <p class="template-description">
+                    {{ template.description }}
+                </p>
+
+
+                <div style="
+                    margin: 15px 0;
+                    padding: 10px 12px;
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    color: #475569;
+                ">
+
+                    <strong>
+                        Best for:
+                    </strong>
+
+                    {{ template.best_for }}
+
+                </div>
+
+
+                <!-- RESUME PREVIEW -->
+
+                <div class="template-preview">
+
+                    <div class="template-preview-name">
+                        YOUR NAME
+                    </div>
+
+                    <div class="template-preview-contact">
+                        Email | Phone | LinkedIn | GitHub
+                    </div>
+
+
+                    <div class="template-preview-heading">
+                        PROFESSIONAL SUMMARY
+                    </div>
+
+                    <div>
+                        Results-oriented professional with
+                        relevant experience and skills.
+                    </div>
+
+
+                    <div class="template-preview-heading">
+                        TECHNICAL SKILLS
+                    </div>
+
+                    <div>
+                        Python | SQL | Excel | Power BI
+                    </div>
+
+
+                    <div class="template-preview-heading">
+                        EXPERIENCE
+                    </div>
+
+                    <div>
+                        Company Name — Job Title
+                    </div>
+
+                    <div style="margin-top: 4px;">
+                        • Developed solutions using relevant technologies.
+                    </div>
+
+                    <div>
+                        • Improved business performance through analysis.
+                    </div>
+
+
+                    <div class="template-preview-heading">
+                        PROJECTS
+                    </div>
+
+                    <div>
+                        Project Name | Technologies
+                    </div>
+
+                    <div>
+                        • Built and implemented the project.
+                    </div>
+
+
+                    <div class="template-preview-heading">
+                        EDUCATION
+                    </div>
+
+                    <div>
+                        Degree — University — Graduation Year
+                    </div>
+
+
+                    <div class="template-preview-heading">
+                        CERTIFICATIONS
+                    </div>
+
+                    <div>
+                        Certification — Provider
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <a
+                    href="{% url 'resume_builder' template=template.slug %}"
+                    class="button primary-button"
+                    style="width: 100%; text-align: center;"
+                >
+                    Use This Template
+                </a>
+
+            </div>
+
+        {% empty %}
+
+            <div class="card" style="grid-column: 1 / -1;">
+
+                <div class="empty-state">
+
+                    <h2>
+                        No Templates Available
+                    </h2>
+
+                    <p>
+                        Resume templates are currently unavailable.
+                    </p>
+
+                    <a
+                        href="{% url 'dashboard' %}"
+                        class="button primary-button"
+                    >
+                        Back to Dashboard
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <div style="text-align: center; margin-top: 30px;">
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="button outline-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

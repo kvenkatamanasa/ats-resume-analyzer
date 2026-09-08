@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Build Resume - {{ template_name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-container">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <span class="badge badge-blue">
+            {{ template_name }}
+        </span>
+
+        <h1>
+            Build Your ATS-Friendly Resume
+        </h1>
+
+        <p>
+            Enter your information below to create a clean,
+            professional and ATS-friendly resume.
+        </p>
+
+    </div>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <!-- =================================================
+             PERSONAL INFORMATION
+             ================================================= -->
+
+        <div class="card">
+
+            <div class="card-header">
+                Personal Information
+            </div>
+
+
+            <div class="two-column">
+
+                <div class="form-group">
+
+                    <label for="{{ form.full_name.id_for_label }}">
+                        Full Name
+                    </label>
+
+                    {{ form.full_name }}
+
+                    {% if form.full_name.errors %}
+                        <div class="error">
+                            {{ form.full_name.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.professional_title.id_for_label }}">
+                        Professional Title
+                    </label>
+
+                    {{ form.professional_title }}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.email.id_for_label }}">
+                        Email
+                    </label>
+
+                    {{ form.email }}
+
+                    {% if form.email.errors %}
+                        <div class="error">
+                            {{ form.email.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.phone.id_for_label }}">
+                        Phone
+                    </label>
+
+                    {{ form.phone }}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.location.id_for_label }}">
+                        Location
+                    </label>
+
+                    {{ form.location }}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.linkedin.id_for_label }}">
+                        LinkedIn
+                    </label>
+
+                    {{ form.linkedin }}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.github.id_for_label }}">
+                        GitHub
+                    </label>
+
+                    {{ form.github }}
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SUMMARY
+             ================================================= -->
+
+        <div class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                Professional Summary
+            </div>
+
+            <div class="form-group">
+
+                {{ form.summary }}
+
+                <div class="help-text">
+                    Write a concise summary relevant to your
+                    target position.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SKILLS
+             ================================================= -->
+
+        <div class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                Technical Skills
+            </div>
+
+            <div class="form-group">
+
+                {{ form.skills }}
+
+                <div class="help-text">
+                    Example: Python, SQL, Django, Power BI, Excel
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             EXPERIENCE
+             ================================================= -->
+
+        <div class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                Experience
+            </div>
+
+            <div class="form-group">
+
+                {{ form.experience }}
+
+                <div class="help-text">
+                    Use action verbs and real measurable achievements.
+                    Do not invent numbers.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PROJECTS
+             ================================================= -->
+
+        <div class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                Projects
+            </div>
+
+            <div class="form-group">
+
+                {{ form.projects }}
+
+                <div class="help-text">
+                    Include technologies, contributions and outcomes.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             EDUCATION
+             ================================================= -->
+
+        <div class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                Education
+            </div>
+
+            <div class="form-group">
+
+                {{ form.education }}
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CERTIFICATIONS
+             ================================================= -->
+
+        <div class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                Certifications
+            </div>
+
+            <div class="form-group">
+
+                {{ form.certifications }}
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ACHIEVEMENTS
+             ================================================= -->
+
+        <div class="card" style="margin-top: 25px;">
+
+            <div class="card-header">
+                Achievements
+            </div>
+
+            <div class="form-group">
+
+                {{ form.achievements }}
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+             ================================================= -->
+
+        <div
+            style="
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 30px;
+                margin-bottom: 40px;
+            "
+        >
+
+            <a
+                href="{% url 'resume_templates' %}"
+                class="button outline-button"
+            >
+                ← Choose Another Template
+            </a>
+
+
+            <button
+                type="submit"
+                class="button primary-button"
+            >
+                Generate ATS Resume
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+{% endblock %}
