@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     ".vercel.app",
+    "ats-resume-analyzer-seven-eta.vercel.app",
 ]
 
 
@@ -264,7 +265,8 @@ LOGOUT_REDIRECT_URL = "/"
 # =========================================================
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.vercel.app",
+     "https://*.vercel.app",
+    "https://ats-resume-analyzer-seven-eta.vercel.app",
 ]
 
 
