@@ -6,24 +6,22 @@ class Resume(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="resumes"
+        related_name='resumes'
     )
 
+    # Keep this field for compatibility with existing database migrations.
+    # We will NOT depend on it for Vercel storage.
     file = models.FileField(
-        upload_to="resumes/"
+        upload_to='resumes/',
+        blank=True,
+        null=True
     )
 
-    original_filename = models.CharField(
-        max_length=255
-    )
+    original_filename = models.CharField(max_length=255)
 
-    extracted_text = models.TextField(
-        blank=True
-    )
+    extracted_text = models.TextField(blank=True)
 
-    uploaded_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.original_filename
@@ -33,7 +31,7 @@ class JobDescription(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="job_descriptions"
+        related_name='job_descriptions'
     )
 
     title = models.CharField(
@@ -48,47 +46,35 @@ class JobDescription(models.Model):
     )
 
     def __str__(self):
-        return self.title or "Job Description"
+        return self.title or 'Job Description'
 
 
 class ResumeAnalysis(models.Model):
     resume = models.ForeignKey(
         Resume,
         on_delete=models.CASCADE,
-        related_name="analyses"
+        related_name='analyses'
     )
 
     job_description = models.ForeignKey(
         JobDescription,
         on_delete=models.CASCADE,
-        related_name="analyses",
         null=True,
-        blank=True
+        blank=True,
+        related_name='analyses'
     )
 
-    ats_score = models.FloatField(
-        default=0
-    )
+    ats_score = models.FloatField(default=0)
 
-    keyword_score = models.FloatField(
-        default=0
-    )
+    keyword_score = models.FloatField(default=0)
 
-    skills_score = models.FloatField(
-        default=0
-    )
+    skills_score = models.FloatField(default=0)
 
-    section_score = models.FloatField(
-        default=0
-    )
+    section_score = models.FloatField(default=0)
 
-    experience_score = models.FloatField(
-        default=0
-    )
+    experience_score = models.FloatField(default=0)
 
-    formatting_score = models.FloatField(
-        default=0
-    )
+    formatting_score = models.FloatField(default=0)
 
     skills = models.JSONField(
         default=list,
@@ -115,39 +101,74 @@ class ResumeAnalysis(models.Model):
         blank=True
     )
 
+    jd_match_score = models.FloatField(default=0)
+
+    matched_skills = models.JSONField(
+        default=list,
+        blank=True
+    )
+
+    missing_skills = models.JSONField(
+        default=list,
+        blank=True
+    )
+
+    priority_keywords = models.JSONField(
+        default=list,
+        blank=True
+    )
+
+    improvement_suggestions = models.JSONField(
+        default=list,
+        blank=True
+    )
+
+    before_score = models.FloatField(default=0)
+
+    after_score = models.FloatField(default=0)
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
 
     def __str__(self):
-        return (
-            f"Analysis - "
-            f"{self.resume.original_filename} - "
-            f"{self.ats_score}"
-        )
+        return f'Analysis - {self.resume.original_filename} - {self.ats_score}'
 
 
 class BuiltResume(models.Model):
 
     TEMPLATE_CHOICES = [
-        ("classic", "Classic ATS"),
-        ("modern", "Modern ATS"),
-        ("student", "Student / Fresher ATS"),
-        ("professional", "Professional ATS"),
-        ("executive", "Executive ATS"),
-        ("minimal", "Minimal ATS"),
+        ('classic', 'Classic ATS'),
+        ('modern', 'Modern ATS'),
+        ('student', 'Student / Fresher ATS'),
+        ('professional', 'Professional ATS'),
+        ('executive', 'Executive ATS'),
+        ('minimal', 'Minimal ATS'),
     ]
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="built_resumes"
+        related_name='built_resumes'
     )
 
     template = models.CharField(
         max_length=20,
         choices=TEMPLATE_CHOICES,
-        default="classic"
+        default='classic'
+    )
+
+    version_name = models.CharField(
+        max_length=150,
+        default='Resume'
+    )
+
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='versions'
     )
 
     full_name = models.CharField(
@@ -216,7 +237,4 @@ class BuiltResume(models.Model):
     )
 
     def __str__(self):
-        return (
-            f"{self.full_name} - "
-            f"{self.get_template_display()}"
-        )
+        return f'{self.full_name} - {self.version_name}'
