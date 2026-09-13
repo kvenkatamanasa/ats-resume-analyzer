@@ -115,129 +115,131 @@ def dashboard(request):
         },
     )
 
-
 @login_required
 def upload_resume(request):
 
-    if request.method == "POST":
+    if request.method == 'POST':
 
         form = ResumeUploadForm(
             request.POST,
-            request.FILES,
+            request.FILES
         )
 
         if form.is_valid():
 
-            resume = form.save(commit=False)
-
-            resume.user = request.user
-
-            uploaded_file = request.FILES.get("file")
-
-            if uploaded_file:
-
-                resume.original_filename = uploaded_file.name
-
-            job_description = None
-
             try:
 
-                extracted_text = extract_resume_text(
-                    resume.file.path
+                # --------------------------------
+                # Get uploaded file
+                # --------------------------------
+
+                uploaded_file = form.cleaned_data['file']
+
+                original_filename = uploaded_file.name
+
+                # --------------------------------
+                # Extract resume text
+                # --------------------------------
+
+                text = extract_resume_text_from_upload(
+                    uploaded_file
                 )
 
-                if not extracted_text.strip():
+                if not text:
 
                     raise ValueError(
-                        "No readable text was found in the "
-                        "uploaded resume."
+                        "Could not extract text from the resume."
                     )
 
-                resume.extracted_text = extracted_text
+                # --------------------------------
+                # IMPORTANT:
+                # Do NOT save uploaded file to
+                # Vercel filesystem.
+                #
+                # Save only extracted text.
+                # --------------------------------
 
-                resume.save()
+                resume = Resume.objects.create(
+
+                    user=request.user,
+
+                    original_filename=original_filename,
+
+                    extracted_text=text
+
+                )
+
+                # --------------------------------
+                # Optional Job Description
+                # --------------------------------
+
+                jd = None
+
+                jd_text = (
+                    form.cleaned_data.get(
+                        'job_description',
+                        ''
+                    )
+                    .strip()
+                )
 
                 job_title = (
                     form.cleaned_data.get(
-                        "job_title",
-                        "",
-                    ) or ""
+                        'job_title',
+                        ''
+                    )
+                    .strip()
                 )
 
-                job_description_text = (
-                    form.cleaned_data.get(
-                        "job_description",
-                        "",
-                    ) or ""
-                )
+                if jd_text:
 
-                if job_description_text.strip():
+                    jd = JobDescription.objects.create(
 
-                    job_description = JobDescription.objects.create(
                         user=request.user,
-                        title=job_title.strip(),
-                        description=job_description_text.strip(),
+
+                        title=job_title,
+
+                        description=jd_text
+
                     )
 
-                result = analyze_resume(
-                    extracted_text,
-                    job_description_text,
+                # --------------------------------
+                # ATS Analysis
+                # --------------------------------
+
+                data = analyze_resume(
+                    text,
+                    jd_text
                 )
 
-                ResumeAnalysis.objects.create(
+                # --------------------------------
+                # Save analysis
+                # --------------------------------
+
+                analysis = ResumeAnalysis.objects.create(
+
                     resume=resume,
-                    job_description=job_description,
-                    ats_score=result.get("ats_score", 0),
-                    keyword_score=result.get("keyword_score", 0),
-                    skills_score=result.get("skills_score", 0),
-                    section_score=result.get("section_score", 0),
-                    experience_score=result.get(
-                        "experience_score",
-                        0,
-                    ),
-                    formatting_score=result.get(
-                        "formatting_score",
-                        0,
-                    ),
-                    skills=result.get(
-                        "skills",
-                        [],
-                    ),
-                    sections=result.get(
-                        "sections",
-                        {},
-                    ),
-                    matched_keywords=result.get(
-                        "matched_keywords",
-                        [],
-                    ),
-                    missing_keywords=result.get(
-                        "missing_keywords",
-                        [],
-                    ),
-                    recommendations=result.get(
-                        "recommendations",
-                        [],
-                    ),
+
+                    job_description=jd,
+
+                    **data
+
                 )
 
-            except Exception as error:
-
-                resume.delete()
-
-                if job_description:
-                    job_description.delete()
-
-                form.add_error(
-                    "file",
-                    f"Could not analyze the resume: {error}",
-                )
-
-            else:
+                # --------------------------------
+                # Redirect to result
+                # --------------------------------
 
                 return redirect(
-                    "resume_result",
-                    resume_id=resume.id,
+                    'analysis_detail',
+                    analysis_id=analysis.id
+                )
+
+            except Exception as exc:
+
+                form.add_error(
+                    'file',
+                    f'Could not process the resume: {exc}'
                 )
 
     else:
@@ -246,38 +248,14 @@ def upload_resume(request):
 
     return render(
         request,
-        "analyzer/upload.html",
+        'upload.html',
         {
-            "form": form,
-        },
+            'form': form
+        }
     )
 
 
-@login_required
-def resume_result(request, resume_id):
-
-    resume = get_object_or_404(
-        Resume,
-        id=resume_id,
-        user=request.user,
-    )
-
-    analysis = (
-        ResumeAnalysis.objects
-        .filter(resume=resume)
-        .select_related("job_description")
-        .order_by("-created_at")
-        .first()
-    )
-
-    return render(
-        request,
-        "analyzer/result.html",
-        {
-            "resume": resume,
-            "analysis": analysis,
-        },
-    )
+        
 
 
 @login_required
