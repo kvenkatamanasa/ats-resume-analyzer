@@ -5,252 +5,152 @@ import pymupdf
 from docx import Document
 
 
-# ============================================================
-# PDF TEXT EXTRACTION
-# ============================================================
+ALLOWED_EXTENSIONS = {".pdf", ".docx"}
 
-def extract_text_from_pdf(file_path):
+MAX_FILE_SIZE = 4 * 1024 * 1024
+
+
+def validate_uploaded_file(uploaded_file):
     """
-    Extract text from a PDF using a filesystem path.
-
-    Works on Windows and Linux/Vercel.
-    """
-
-    file_path = os.fspath(file_path)
-
-    document = pymupdf.open(file_path)
-
-    try:
-        text_parts = []
-
-        for page in document:
-            page_text = page.get_text()
-
-            if page_text:
-                text_parts.append(page_text)
-
-        return "\n".join(text_parts).strip()
-
-    finally:
-        document.close()
-
-
-# ============================================================
-# DOCX TEXT EXTRACTION
-# ============================================================
-
-def extract_text_from_docx(file_path):
-    """
-    Extract text from a DOCX using a filesystem path.
-    """
-
-    file_path = os.fspath(file_path)
-
-    document = Document(file_path)
-
-    paragraphs = []
-
-    for paragraph in document.paragraphs:
-        content = paragraph.text.strip()
-
-        if content:
-            paragraphs.append(content)
-
-    return "\n".join(paragraphs).strip()
-
-
-# ============================================================
-# SAVE DJANGO UPLOADED FILE TO TEMPORARY STORAGE
-# ============================================================
-
-def _save_upload_to_temp(uploaded_file):
-    """
-    Save a Django UploadedFile to a temporary file.
-
-    IMPORTANT:
-    Do not hard-code /tmp.
-
-    tempfile automatically chooses the correct temporary
-    directory for the operating system.
-
-    Windows:
-        C:\\Users\\...\\AppData\\Local\\Temp\\...
-
-    Linux/Vercel:
-        /tmp/...
+    Validate the uploaded resume before processing.
     """
 
     if not uploaded_file:
-        raise ValueError("No file was uploaded.")
+        raise ValueError("No resume file was uploaded.")
 
-    original_name = uploaded_file.name or "resume"
+    filename = uploaded_file.name or ""
 
-    # Get the uploaded file extension
-    suffix = os.path.splitext(original_name)[1].lower()
+    extension = os.path.splitext(filename)[1].lower()
 
-    # Only allow supported formats
-    if suffix not in (".pdf", ".docx"):
+    if extension not in ALLOWED_EXTENSIONS:
         raise ValueError(
             "Only PDF and DOCX files are supported."
         )
 
-    # Let Python automatically choose the correct
-    # temporary directory for Windows/Linux.
-    temp_file = tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=suffix,
-    )
+    if uploaded_file.size > MAX_FILE_SIZE:
+        raise ValueError(
+            "Resume file must be smaller than 4 MB."
+        )
 
-    temp_path = temp_file.name
+    return extension
+
+
+def _save_to_temp(uploaded_file):
+    """
+    Save uploaded file temporarily.
+    This is safe for Vercel because /tmp is temporary.
+    """
+
+    extension = validate_uploaded_file(uploaded_file)
+
+    temp_path = None
 
     try:
-        # Django UploadedFile provides chunks()
-        for chunk in uploaded_file.chunks():
-            temp_file.write(chunk)
 
-        temp_file.flush()
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            suffix=extension,
+            delete=False
+        ) as temp_file:
+
+            temp_path = temp_file.name
+
+            for chunk in uploaded_file.chunks():
+                temp_file.write(chunk)
+
+        return temp_path, extension
 
     except Exception:
-        # Close the file before deleting it
-        temp_file.close()
 
-        try:
-            os.remove(temp_path)
-        except OSError:
-            pass
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except OSError:
+                pass
 
         raise
 
-    finally:
-        temp_file.close()
-
-    return temp_path
-
-
-# ============================================================
-# PDF UPLOADED FILE EXTRACTION
-# ============================================================
-
-def extract_text_from_pdf_file(uploaded_file):
-    """
-    Extract text from a Django UploadedFile containing a PDF.
-
-    The uploaded file is temporarily stored, processed,
-    and deleted afterwards.
-    """
-
-    temp_path = _save_upload_to_temp(uploaded_file)
-
-    try:
-        return extract_text_from_pdf(temp_path)
-
-    finally:
-        try:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-        except OSError:
-            pass
-
-
-# ============================================================
-# DOCX UPLOADED FILE EXTRACTION
-# ============================================================
-
-def extract_text_from_docx_file(uploaded_file):
-    """
-    Extract text from a Django UploadedFile containing DOCX.
-
-    The uploaded file is temporarily stored, processed,
-    and deleted afterwards.
-    """
-
-    temp_path = _save_upload_to_temp(uploaded_file)
-
-    try:
-        return extract_text_from_docx(temp_path)
-
-    finally:
-        try:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-        except OSError:
-            pass
-
-
-# ============================================================
-# MAIN UPLOADED RESUME EXTRACTION FUNCTION
-# ============================================================
 
 def extract_resume_text_from_upload(uploaded_file):
     """
-    Extract text from a Django UploadedFile.
+    Extract text from PDF or DOCX.
 
-    Supported:
-        PDF
-        DOCX
+    The original uploaded file is NOT permanently stored.
     """
 
-    if not uploaded_file:
-        raise ValueError(
-            "No resume file was uploaded."
-        )
+    temp_path = None
 
-    filename = (
-        uploaded_file.name or ""
-    ).lower()
+    try:
 
-    # PDF
-    if filename.endswith(".pdf"):
-        return extract_text_from_pdf_file(
+        temp_path, extension = _save_to_temp(
             uploaded_file
         )
 
-    # DOCX
-    if filename.endswith(".docx"):
-        return extract_text_from_docx_file(
-            uploaded_file
-        )
+        # -------------------------
+        # PDF
+        # -------------------------
 
-    # Unsupported format
-    raise ValueError(
-        "Unsupported file format. "
-        "Please upload a PDF or DOCX file."
-    )
+        if extension == ".pdf":
 
+            document = pymupdf.open(temp_path)
 
-# ============================================================
-# PATH-BASED EXTRACTION
-# ============================================================
+            try:
 
-def extract_resume_text(file_path):
-    """
-    Extract resume text from an existing filesystem path.
+                pages = []
 
-    Kept for compatibility with other parts of the project.
-    """
+                for page in document:
+                    text = page.get_text()
 
-    if not file_path:
-        raise ValueError(
-            "No resume file path was provided."
-        )
+                    if text:
+                        pages.append(text)
 
-    file_path = os.fspath(file_path)
+                extracted_text = "\n".join(
+                    pages
+                ).strip()
 
-    lower_path = file_path.lower()
+            finally:
 
-    # PDF
-    if lower_path.endswith(".pdf"):
-        return extract_text_from_pdf(
-            file_path
-        )
+                document.close()
 
-    # DOCX
-    if lower_path.endswith(".docx"):
-        return extract_text_from_docx(
-            file_path
-        )
+        # -------------------------
+        # DOCX
+        # -------------------------
 
-    raise ValueError(
-        "Unsupported file format. "
-        "Please upload a PDF or DOCX file."
-    )
+        else:
+
+            document = Document(temp_path)
+
+            paragraphs = []
+
+            for paragraph in document.paragraphs:
+
+                text = paragraph.text.strip()
+
+                if text:
+                    paragraphs.append(text)
+
+            extracted_text = "\n".join(
+                paragraphs
+            ).strip()
+
+        # -------------------------
+        # Validate extraction
+        # -------------------------
+
+        if not extracted_text:
+
+            raise ValueError(
+                "No readable text was found in the resume."
+            )
+
+        return extracted_text
+
+    finally:
+
+        if temp_path and os.path.exists(temp_path):
+
+            try:
+                os.remove(temp_path)
+
+            except OSError:
+                pass
